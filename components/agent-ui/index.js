@@ -1,5 +1,9 @@
 // components/agent-ui/index.js
-import { guide, checkConfig, randomSelectInitquestion } from "./tools";
+import {
+  guide,
+  checkConfig,
+  randomSelectInitquestion
+} from "./tools";
 Component({
   properties: {
     showBotAvatar: {
@@ -106,7 +110,10 @@ Component({
   },
 
   attached: async function () {
-    const { botId, type } = this.data.agentConfig;
+    const {
+      botId,
+      type
+    } = this.data.agentConfig;
     // 检查配置
     const [check, message] = checkConfig(this.data.agentConfig);
     if (!check) {
@@ -114,14 +121,20 @@ Component({
         title: "提示",
         content: message,
       });
-      this.setData({ showGuide: true });
+      this.setData({
+        showGuide: true
+      });
       return;
     } else {
-      this.setData({ showGuide: false });
+      this.setData({
+        showGuide: false
+      });
     }
     if (type === "bot") {
       const ai = wx.cloud.extend.AI;
-      const bot = await ai.bot.get({ botId });
+      const bot = await ai.bot.get({
+        botId
+      });
       // 新增错误提示
       if (bot.code) {
         wx.showModal({
@@ -138,7 +151,9 @@ Component({
         role: "assistant",
         hiddenBtnGround: true,
       };
-      const { chatRecords } = this.data;
+      const {
+        chatRecords
+      } = this.data;
       // 随机选取三个初始化问题
       const questions = randomSelectInitquestion(bot.initQuestions, 3);
       let allowWebSearch = this.data.agentConfig.allowWebSearch
@@ -219,7 +234,11 @@ Component({
       if (this.data.scrollTimer) {
         clearTimeout(this.data.scrollTimer);
       }
-      const { scrollTop, scrollHeight, height } = e.detail;
+      const {
+        scrollTop,
+        scrollHeight,
+        height
+      } = e.detail;
 
       this.setData({
         scrollTimer: setTimeout(() => {
@@ -320,9 +339,15 @@ Component({
       })
     },
     clearChatRecords: function () {
-      const { type } = this.data.agentConfig;
-      const { bot } = this.data;
-      this.setData({ showTools: false });
+      const {
+        type
+      } = this.data.agentConfig;
+      const {
+        bot
+      } = this.data;
+      this.setData({
+        showTools: false
+      });
       if (type === "model") {
         this.setData({
           chatRecords: [],
@@ -469,7 +494,10 @@ Component({
     },
     stop: function () {
       this.autoToBottom();
-      const { chatRecords, chatStatus } = this.data;
+      const {
+        chatRecords,
+        chatStatus
+      } = this.data;
       const newChatRecords = [...chatRecords];
       const record = newChatRecords[newChatRecords.length - 1];
       if (chatStatus === 1) {
@@ -486,11 +514,16 @@ Component({
       });
     },
     openSetPanel: function () {
-      this.setData({ setPanelVisibility: true });
+      this.setData({
+        setPanelVisibility: true
+      });
     },
     closeSetPanel: function () {
-      this.setData({ setPanelVisibility: false });
+      this.setData({
+        setPanelVisibility: false
+      });
     },
+    // TODO send to backend api http://1234.5678.910.1112/api/v1/chat
     sendMessage: async function (event) {
       if (this.data.showFileList) {
         this.setData({
@@ -502,9 +535,18 @@ Component({
           showTools: !this.data.showTools,
         });
       }
-      const { message } = event.currentTarget.dataset;
-      let { inputValue, bot, agentConfig, chatRecords, chatStatus, imageList } =
-        this.data;
+      const {
+        message
+      } = event.currentTarget.dataset;
+      let {
+        inputValue,
+        bot,
+        agentConfig,
+        chatRecords,
+        chatStatus,
+        imageList
+      } =
+      this.data;
       // 如果正在进行对话，不让发送消息
       if (chatStatus !== 0) {
         return;
@@ -523,7 +565,11 @@ Component({
           return;
         }
       }
-      const { type, modelName, model } = agentConfig;
+      const {
+        type,
+        modelName,
+        model
+      } = agentConfig;
       // console.log(inputValue,bot.botId)
       const userRecord = {
         content: inputValue,
@@ -538,8 +584,56 @@ Component({
           sendFileList: [],
         });
       }
+
+      // 调用后端接口
+      // 构建消息对象
+      const messageBody = {
+        usr_name: "test6", // 替换为实际的用户名称
+        conversation_id: "123457", // 替换为实际的会话ID
+        text: inputValue,
+        sender: "user", // 发送者标识
+        model: "gentle"
+      };
+      // 确保 res 在 try-catch 外部定义
+      let res = null;
+
+      try {
+        res = await new Promise((resolve, reject) => {
+          wx.request({
+            url: 'http://127.0.0.1:8000/chat', // 替换为你的后端 API 地址
+            method: 'POST',
+            header: {
+              'Content-Type': 'application/json',
+            },
+            data: messageBody,
+            success: (response) => {
+              if (response.statusCode === 200) {
+                resolve(response.data);
+              } else {
+                console.error("HTTP 错误:", response.statusCode);
+                reject(new Error("HTTP 错误: " + response.statusCode));
+              }
+            },
+            fail: (error) => {
+              console.error("请求失败:", error);
+              reject(error);
+            }
+          });
+        });
+      } catch (error) {
+        console.error('请求失败:', error);
+        res = {
+          response: "hello world"
+        }; // 发生错误时，提供默认值
+      }
+
+      // 处理后端返回的响应
+      const responseMessage = res.response || "hello world";
+      console.log("后端返回:", responseMessage);
+
+
       const record = {
-        content: "",
+        content: responseMessage,
         record_id: "record_id" + String(+new Date() + 10),
         role: "assistant",
         hiddenBtnGround: true,
@@ -548,8 +642,7 @@ Component({
         inputValue: "",
         questions: [],
         chatRecords: [...chatRecords, userRecord, record],
-        chatStatus: 1, // 聊天状态切换为1发送中
-        imageList: [],
+        chatStatus: 0, // 聊天状态切换为正常
       });
 
       // 新增一轮对话记录时 自动往下滚底
@@ -581,7 +674,9 @@ Component({
         let endTime = null; // 记录结束思考时间
         let index = 0
         for await (let event of res.eventStream) {
-          const { chatStatus } = this.data;
+          const {
+            chatStatus
+          } = this.data;
           if (chatStatus === 0) {
             isManuallyPaused = true;
             break;
@@ -589,7 +684,9 @@ Component({
           if (index % 10 === 0) { // 更新频率降为1/10
             this.toBottom(40);
           }
-          const { data } = event;
+          const {
+            data
+          } = event;
           try {
             const dataJson = JSON.parse(data);
             const {
@@ -653,7 +750,8 @@ Component({
               contentText += content;
               lastValue.content = contentText;
               this.setData({
-                [`chatRecords[${lastValueIndex}].content`]: lastValue.content, chatStatus: 3
+                [`chatRecords[${lastValueIndex}].content`]: lastValue.content,
+                chatStatus: 3
               }); // 聊天状态切换为输出content中
             }
             // 知识库，这个版本没有文件元信息，展示不更新
@@ -714,8 +812,7 @@ Component({
             messages: [
               ...chatRecords.map((item) => ({
                 role: item.role,
-                content: [
-                  {
+                content: [{
                     type: "text",
                     text: item.content,
                   },
@@ -729,8 +826,7 @@ Component({
               })),
               {
                 role: "user",
-                content: [
-                  {
+                content: [{
                     type: "text",
                     text: inputValue,
                   },
@@ -775,15 +871,27 @@ Component({
           }
           this.toBottom();
 
-          const { data } = event;
+          const {
+            data
+          } = event;
           try {
             const dataJson = JSON.parse(data);
-            const { id, choices = [] } = dataJson || {};
-            const { delta, finish_reason } = choices[0] || {};
+            const {
+              id,
+              choices = []
+            } = dataJson || {};
+            const {
+              delta,
+              finish_reason
+            } = choices[0] || {};
             if (finish_reason === "stop") {
               break;
             }
-            const { content, reasoning_content, role } = delta;
+            const {
+              content,
+              reasoning_content,
+              role
+            } = delta;
             reasoningText += reasoning_content || "";
             contentText += content || "";
             const newValue = [...this.data.chatRecords];
@@ -803,10 +911,13 @@ Component({
             } else {
               chatStatus = 3;
             }
-            lastValue.thinkingTime = endTime
-              ? Math.floor((endTime - startTime) / 1000)
-              : 0;
-            this.setData({ chatRecords: newValue, chatStatus });
+            lastValue.thinkingTime = endTime ?
+              Math.floor((endTime - startTime) / 1000) :
+              0;
+            this.setData({
+              chatRecords: newValue,
+              chatStatus
+            });
           } catch (e) {
             // console.log(e, event)
             break;
@@ -815,7 +926,10 @@ Component({
         const newValue = [...this.data.chatRecords];
         const lastValue = newValue[newValue.length - 1];
         lastValue.hiddenBtnGround = isManuallyPaused; // 用户手动暂停，不显示下面的按钮
-        this.setData({ chatRecords: newValue, chatStatus: 0 }); // 回正
+        this.setData({
+          chatRecords: newValue,
+          chatStatus: 0
+        }); // 回正
       }
     },
     toBottom: async function (unit) {
@@ -855,7 +969,9 @@ Component({
     },
     copyChatRecord: function (e) {
       // console.log(e)
-      const { content } = e.currentTarget.dataset;
+      const {
+        content
+      } = e.currentTarget.dataset;
       wx.setClipboardData({
         data: content,
         success: function (res) {
@@ -870,7 +986,7 @@ Component({
       // 顶部文件行展现时，隐藏底部工具栏
       this.setData({});
     },
-    subFileList: function () { },
+    subFileList: function () {},
     uploadImgs: function () {
       const that = this;
       wx.chooseMedia({
@@ -881,8 +997,12 @@ Component({
         camera: "back",
         success(media) {
           // console.log(media.tempFiles)
-          const { tempFiles } = media;
-          that.setData({ imageList: [...tempFiles] });
+          const {
+            tempFiles
+          } = media;
+          that.setData({
+            imageList: [...tempFiles]
+          });
           tempFiles.forEach((img, index) => {
             const lastDotIndex = img.tempFilePath.lastIndexOf(".");
             const fileExtension = img.tempFilePath.substring(lastDotIndex + 1);
@@ -892,10 +1012,14 @@ Component({
               success(file) {
                 const base64String = file.data;
                 const base64Url = `data:image/${fileExtension};base64,${base64String}`;
-                const { imageList } = that.data;
+                const {
+                  imageList
+                } = that.data;
                 const image = imageList[index];
                 image.base64Url = base64Url;
-                that.setData({ imageList: [...imageList] });
+                that.setData({
+                  imageList: [...imageList]
+                });
               },
             });
           });
@@ -908,15 +1032,23 @@ Component({
     deleteImg: function (e) {
       const {
         currentTarget: {
-          dataset: { index },
+          dataset: {
+            index
+          },
         },
       } = e;
-      const { imageList } = this.data;
+      const {
+        imageList
+      } = this.data;
       const newImageList = imageList.filter((_, idx) => idx != index);
-      this.setData({ imageList: [...newImageList] });
+      this.setData({
+        imageList: [...newImageList]
+      });
     },
     copyUrl: function (e) {
-      const { url } = e.currentTarget.dataset;
+      const {
+        url
+      } = e.currentTarget.dataset;
       console.log(url);
       wx.setClipboardData({
         data: url,
@@ -947,7 +1079,10 @@ Component({
     },
     handleChangeChild: function (e) {
       console.log("change", e.detail);
-      const { fileId, tempId } = e.detail;
+      const {
+        fileId,
+        tempId
+      } = e.detail;
       // const curFile = this.data.sendFileList.find(item => item.tempId === tempId)
       // curFile.fileId = fileId
       const newSendFileList = this.data.sendFileList.map((item) => {

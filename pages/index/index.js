@@ -23,9 +23,22 @@ Page({
 
     // 这里需要调用后端接口验证
     console.log('登录手机号:', this.data.phoneNumber);
-    // TODO 调用后端接口验证
-
-
+    // TODO 调用后端接口注册 /api/users post 请求
+    wx.request({
+      url: 'http://1234.5678.910.1112/api/users/create_user',
+      method: 'POST',
+      data: {
+        phoneNumber: this.data.phoneNumber,
+        name: 'test'
+      },
+      success: (res) => {
+        console.log('注册成功:', res);
+      },
+      fail: (err) => {
+        console.error('注册失败:', err);
+      }
+    })
+    
     // 登录成功后的处理
     wx.showToast({
       title: '登录成功',
