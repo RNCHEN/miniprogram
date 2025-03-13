@@ -26,7 +26,13 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {},
+  onLoad(options) {
+    console.log('chatbot onLoad', options)
+    const { phoneNumber, name } = options;
+    console.log('接收到的手机号:', phoneNumber);
+    console.log('接收到的姓名:', name);
+    // 你可以在这里使用这些数据
+  },
 
   /**
    * 生命周期函数--监听页面初次渲染完成

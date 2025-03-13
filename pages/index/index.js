@@ -68,7 +68,7 @@ Page({
         // 延迟跳转，让用户看到成功提示
         setTimeout(() => {
           wx.reLaunch({
-            url: '/pages/chatBot/chatBot',
+            url: `/pages/chatBot/chatBot?phoneNumber=${encodeURIComponent(phoneNumber)}&name=${encodeURIComponent(name)}`,
             fail: (err) => {
               console.error('跳转失败:', err);
               wx.showToast({

@@ -62,7 +62,7 @@ agentConfig: {
       modelName: "", 
       model:"",
       logo:"",
-      welcomeMessage:""
+      welcomeMessage:"欢迎语2"
     } 
 \`\`\`
 对接 ai 大模型服务时，type 为 model，modelName 和 modelName必填，配置如下：
@@ -73,7 +73,7 @@ agentConfig: {
       modelName: "hunyuan", 
       model:"hunyuan-lite",
       logo:"",
-      welcomeMessage:"" 
+      welcomeMessage:"欢迎语" 
     } 
 \`\`\`
 `;

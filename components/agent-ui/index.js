@@ -22,6 +22,14 @@ Component({
         allowWebSearch: Boolean,
       },
     },
+    phoneNumber: {
+      type: String,
+      value: ''
+    },
+    name: {
+      type: String,
+      value: ''
+    },
   },
 
   observers: {
@@ -106,10 +114,14 @@ Component({
     total: 0,
     refreshText: '下拉加载历史记录',
     contentHeightInScrollViewTop: 0, // scroll区域顶部固定区域高度
-    shouldAddScrollTop: false
+    shouldAddScrollTop: false,
+    displayPhoneNumber: '',
+    displayName: ''
   },
 
   attached: async function () {
+    console.log('attached', this.data)
+    console.log('attached', this.properties)
     const { botId, type } = this.data.agentConfig;
     // 检查配置
     const [check, message] = checkConfig(this.data.agentConfig);
@@ -167,6 +179,22 @@ Component({
     this.setData({
       contentHeightInScrollViewTop: topHeight
     });
+
+    // 在组件加载时使用传递的参数
+    const { phoneNumber, name } = this.properties;
+
+    console.log(' attached 接收到的手机号:', phoneNumber);
+    console.log(' attached 接收到的姓名:', name);
+
+    // 你可以在这里使用这些参数，例如更新组件的状态
+    this.setData({
+      // 例如，更新显示的内容
+      displayPhoneNumber: phoneNumber,
+      displayName: name
+    });
+
+    console.log('attached displayPhoneNumber', this.data.displayPhoneNumber)
+    console.log('attached displayName', this.data.displayName)
   },
   methods: {
     // 滚动相关处理
@@ -519,6 +547,7 @@ Component({
     },
     // TODO send to backend api https://momecho.work/chat
     sendMessage: async function (event) {
+      console.log('发送消息 sendMessage', this.displayPhoneNumber, this.displayName)
       if (this.data.showFileList) {
         this.setData({
           showFileList: !this.data.showFileList,

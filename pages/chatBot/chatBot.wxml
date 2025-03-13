@@ -1,4 +1,8 @@
 <!--pages/chatBot/chatBot.wxml-->
 <view>
-  <agent-ui agentConfig="{{agentConfig}}" showBotAvatar="{{true}}"></agent-ui>
+<view>
+  <text>手机号: {{phoneNumber}}</text>
+  <text>姓名: {{name}}</text>
+</view>
+  <agent-ui agentConfig="{{agentConfig}}" showBotAvatar="{{true}}" phoneNumber="{{phoneNumber}}" name="{{name}}"></agent-ui>
 </view>
