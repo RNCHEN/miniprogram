@@ -1,6 +1,15 @@
 Page({
   data: {
-    phoneNumber: '' // 存储用户输入的手机号
+    phoneNumber: '', // 存储用户输入的手机号
+    name: '', // 存储用户输入的姓名
+    // ... 其他数据
+  },
+
+  // 监听姓名输入
+  onNameInput(e) {
+    this.setData({
+      name: e.detail.value
+    });
   },
 
   // 监听手机号输入
@@ -12,8 +21,19 @@ Page({
 
   // 登录
   handleLogin() {
+    const { phoneNumber, name } = this.data;
+    console.log(phoneNumber,name)
+    // 检查手机号和姓名是否都有值
+    if (!phoneNumber || !name) {
+      wx.showToast({
+        title: '请填写手机号和姓名',
+        icon: 'none'
+      });
+      return;
+    }
+
     const phoneReg = /^1[3-9]\d{9}$/;
-    if (!phoneReg.test(this.data.phoneNumber)) {
+    if (!phoneReg.test(phoneNumber)) {
       wx.showToast({
         title: '请输入正确的手机号',
         icon: 'none'
@@ -22,14 +42,14 @@ Page({
     }
 
     // 这里需要调用后端接口验证
-    console.log('登录手机号:', this.data.phoneNumber);
+    console.log('登录手机号:', phoneNumber);
     // TODO 调用后端接口注册 /api/users post 请求
     wx.request({
-      url: 'http://1234.5678.910.1112/api/users/create_user',
+      url: 'https://momecho.work/api/users/create_user',
       method: 'POST',
       data: {
-        phoneNumber: this.data.phoneNumber,
-        name: 'test'
+        phoneNumber: phoneNumber,
+        name: name
       },
       success: (res) => {
         console.log('注册成功:', res);

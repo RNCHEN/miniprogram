@@ -18,7 +18,7 @@ Component({
         modelName: "", // 大模型服务商
         model: "", // 具体的模型版本
         logo: "", // 图标(只在model模式下生效)
-        welcomeMessage: "", // 欢迎语(只在model模式下生效)
+        welcomeMessage: "有什么事情都可以和我说哦", // 欢迎语(只在model模式下生效)
         allowWebSearch: Boolean,
       },
     },
@@ -110,10 +110,7 @@ Component({
   },
 
   attached: async function () {
-    const {
-      botId,
-      type
-    } = this.data.agentConfig;
+    const { botId, type } = this.data.agentConfig;
     // 检查配置
     const [check, message] = checkConfig(this.data.agentConfig);
     if (!check) {
@@ -144,35 +141,32 @@ Component({
         return;
       }
 
-      // 初始化第一条记录为welcomeMessage
-      const record = {
-        content: bot.welcomeMessage,
+      // 初始化第一条记录为欢迎消息
+      const welcomeMessage = {
+        content: "你好，任何事情都可以告诉我", // 设置欢迎消息
         record_id: "record_id" + String(+new Date() + 10),
         role: "assistant",
         hiddenBtnGround: true,
       };
-      const {
-        chatRecords
-      } = this.data;
+      const { chatRecords } = this.data;
       // 随机选取三个初始化问题
       const questions = randomSelectInitquestion(bot.initQuestions, 3);
-      let allowWebSearch = this.data.agentConfig.allowWebSearch
-      console.log('allowWebSearch', allowWebSearch)
-      allowWebSearch = allowWebSearch === undefined ? true : allowWebSearch
+      let allowWebSearch = this.data.agentConfig.allowWebSearch;
+      console.log('allowWebSearch', allowWebSearch);
+      allowWebSearch = allowWebSearch === undefined ? true : allowWebSearch;
       this.setData({
         bot,
         questions,
-        chatRecords: [...chatRecords, record],
-        showWebSearchSwitch:
-          !!(bot.searchEnable && allowWebSearch),
+        chatRecords: [welcomeMessage, ...chatRecords], // 将欢迎消息添加到聊天记录
+        showWebSearchSwitch: !!(bot.searchEnable && allowWebSearch),
       });
     }
 
-    const topHeight = await this.calculateContentInTop()
-    console.log('topHeight', topHeight)
+    const topHeight = await this.calculateContentInTop();
+    console.log('topHeight', topHeight);
     this.setData({
       contentHeightInScrollViewTop: topHeight
-    })
+    });
   },
   methods: {
     // 滚动相关处理
@@ -360,7 +354,7 @@ Component({
         return;
       }
       const record = {
-        content: bot.welcomeMessage,
+        content: "你好，任何事情都可以告诉我",
         record_id: "record_id" + String(+new Date() + 10),
         role: "assistant",
         hiddenBtnGround: true,
@@ -584,15 +578,20 @@ Component({
           sendFileList: [],
         });
       }
-
+      // model = gentle or professional
+      // random model 
+      let chatModel = "professional"
+      // if (Math.random() > 0.5) {
+      //   chatModel = "professional"
+      // }
       // 调用后端接口
       // 构建消息对象
       const messageBody = {
         usr_name: "test6", // 替换为实际的用户名称
-        conversation_id: "123457", // 替换为实际的会话ID
+        conversation_id: "45678", // 替换为实际的会话ID
         text: inputValue,
         sender: "user", // 发送者标识
-        model: "gentle"
+        model: chatModel
       };
       // 确保 res 在 try-catch 外部定义
       let res = null;
@@ -600,7 +599,7 @@ Component({
       try {
         res = await new Promise((resolve, reject) => {
           wx.request({
-            url: 'http://127.0.0.1:8000/chat', // 替换为你的后端 API 地址
+            url: 'https://momecho.work/chat', // 替换为你的后端 API 地址
             method: 'POST',
             header: {
               'Content-Type': 'application/json',
@@ -623,7 +622,7 @@ Component({
       } catch (error) {
         console.error('请求失败:', error);
         res = {
-          response: "hello world"
+          response: "网络连接失败"
         }; // 发生错误时，提供默认值
       }
 
