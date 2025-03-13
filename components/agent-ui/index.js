@@ -148,7 +148,7 @@ Component({
         role: "assistant",
         hiddenBtnGround: true,
       };
-      const { chatRecords } = this.data;
+
       // 随机选取三个初始化问题
       const questions = randomSelectInitquestion(bot.initQuestions, 3);
       let allowWebSearch = this.data.agentConfig.allowWebSearch;
@@ -161,7 +161,7 @@ Component({
         showWebSearchSwitch: !!(bot.searchEnable && allowWebSearch),
       });
     }
-
+    const { chatRecords } = this.data;
     const topHeight = await this.calculateContentInTop();
     console.log('topHeight', topHeight);
     this.setData({
@@ -517,7 +517,7 @@ Component({
         setPanelVisibility: false
       });
     },
-    // TODO send to backend api http://1234.5678.910.1112/api/v1/chat
+    // TODO send to backend api https://momecho.work/chat
     sendMessage: async function (event) {
       if (this.data.showFileList) {
         this.setData({
