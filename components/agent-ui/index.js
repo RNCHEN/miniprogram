@@ -132,23 +132,88 @@ Component({
 
 
     // 根据不同的用户mode来设置不同的欢迎消息
-    let customWelcomeMessage = '';
-
-    
-    if (type === "bot") {
-      // 初始化第一条记录为欢迎消息
-      const { chatRecords } = this.data;
-      const welcomeMessage = {
-        content: customWelcomeMessage, // 设置欢迎消息
-        record_id: "record_id" + String(+new Date() + 10),
-        role: "assistant",
-        hiddenBtnGround: false,
-      };
-
-      this.setData({
-        chatRecords: [welcomeMessage, ...chatRecords], // 将欢迎消息添加到聊天记录
+    let customWelcomeMessage = '你好，有什么心事都可以和我说哦';
+    let res = null;
+    try {
+      res = await new Promise((resolve, reject) => {
+        wx.request({
+          url: 'https://momecho.work/api/users/${phoneNumber}', // 替换为你的后端 API 地址
+          method: 'GET',
+          header: {
+            'Content-Type': 'application/json',
+          },
+          success: (response) => {
+            if (response.statusCode === 200) {
+              resolve(response.data);
+            } else {
+              console.error("HTTP 错误:", response.statusCode);
+              reject(new Error("HTTP 错误: " + response.statusCode));
+            }
+          },
+          fail: (error) => {
+            console.error("请求失败:", error);
+            reject(error);
+          }
+        });
       });
+    } catch (error) {
+      console.error('请求失败:', error);
+      res = {
+        response: "网络连接失败"
+      }; // 发生错误时，提供默认值
     }
+    const responseMessage = res.response || "hello world";
+    //  get the user mode
+    // TODO test
+
+    // get chatRecords here 
+    let chatRecordsRes = null;
+    let chatRecords = [];
+    try {
+      chatRecordsRes = await new Promise((resolve, reject) => {
+        wx.request({
+          url: `https://momecho.work/api/chatRecords/${this.properties.phoneNumber}`, // 使用模板字符串构建 URL
+          method: 'GET',
+          header: {
+            'Content-Type': 'application/json',
+          },
+          success: (response) => {
+            if (response.statusCode === 200) {
+              resolve(response.data);
+            } else {
+              console.error("HTTP 错误:", response.statusCode);
+              reject(new Error("HTTP 错误: " + response.statusCode));
+            }
+          },
+          fail: (error) => {
+            console.error("请求失败:", error);
+            reject(error);
+          }
+        });
+      });
+
+      // 处理获取到的聊天记录
+      chatRecords = chatRecordsRes || [];
+      console.log('获取到的聊天记录:', chatRecords);
+      this.setData({
+        chatRecords: chatRecords // 将聊天记录存储到组件的状态中
+      });
+    } catch (error) {
+      console.error('请求失败:', error);
+    }
+
+    console.log('attached  chatRecords', chatRecords)
+    const welcomeMessage = {
+      content: customWelcomeMessage, // 设置欢迎消息
+      record_id: "record_id" + String(+new Date() + 10),
+      role: "assistant",
+      hiddenBtnGround: false,
+    };
+
+    this.setData({
+      chatRecords: [welcomeMessage, ...chatRecords], // 将欢迎消息添加到聊天记录
+    });
+
 
     console.log('attached  chatRecords', chatRecords)
     const topHeight = await this.calculateContentInTop();
@@ -547,7 +612,7 @@ Component({
         chatStatus,
         imageList
       } =
-      this.data;
+        this.data;
       // 如果正在进行对话，不让发送消息
       if (chatStatus !== 0) {
         return;
@@ -821,29 +886,29 @@ Component({
               ...chatRecords.map((item) => ({
                 role: item.role,
                 content: [{
-                    type: "text",
-                    text: item.content,
+                  type: "text",
+                  text: item.content,
+                },
+                ...(item.imageList || []).map((item) => ({
+                  type: "image_url",
+                  image_url: {
+                    url: item.base64Url,
                   },
-                  ...(item.imageList || []).map((item) => ({
-                    type: "image_url",
-                    image_url: {
-                      url: item.base64Url,
-                    },
-                  })),
+                })),
                 ],
               })),
               {
                 role: "user",
                 content: [{
-                    type: "text",
-                    text: inputValue,
+                  type: "text",
+                  text: inputValue,
+                },
+                ...imageList.map((item) => ({
+                  type: "image_url",
+                  image_url: {
+                    url: item.base64Url,
                   },
-                  ...imageList.map((item) => ({
-                    type: "image_url",
-                    image_url: {
-                      url: item.base64Url,
-                    },
-                  })),
+                })),
                 ],
               },
             ],
@@ -994,7 +1059,7 @@ Component({
       // 顶部文件行展现时，隐藏底部工具栏
       this.setData({});
     },
-    subFileList: function () {},
+    subFileList: function () { },
     uploadImgs: function () {
       const that = this;
       wx.chooseMedia({

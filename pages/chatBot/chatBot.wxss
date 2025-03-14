@@ -1,1 +1,18 @@
 /* pages/chatBot/chatBot.wxss */
+
+.welcome-container {
+  display: flex; /* 使用 Flexbox 布局 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  height: 100px; /* 设置容器高度 */
+  background-color:rgb(255, 243, 250); /* 背景颜色 */
+  border-radius: 10px; /* 圆角 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  margin: 20px; /* 外边距 */
+}
+
+.welcome-text {
+  font-size: 24px; /* 字体大小 */
+  color: #ff6f61; /* 字体颜色 */
+  font-weight: bold; /* 加粗 */
+}
