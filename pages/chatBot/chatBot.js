@@ -10,9 +10,11 @@ Page({
       modelName: "deepseek", // 大模型服务商 //
       model: "deepseek-v3", // 具体的模型版本 //
       logo: "https://docs.cloudbase.net/img/logo.svg", // 图标(只在model模式下生效)
-      welcomeMessage: "欢迎语!", // 欢迎语(只在model模式下生效)
+      welcomeMessage: "欢迎语123321!", // 欢迎语(只在model模式下生效)
       allowWebSearch: true, // 允许界面呈现联网配置开关
     },
+    phoneNumber: '',
+    name: '',
   },
 
   // modelName: "hunyuan-open", // 大模型服务商
@@ -29,9 +31,12 @@ Page({
   onLoad(options) {
     console.log('chatbot onLoad', options)
     const { phoneNumber, name } = options;
-    console.log('接收到的手机号:', phoneNumber);
-    console.log('接收到的姓名:', name);
-    // 你可以在这里使用这些数据
+    // 你可以在这里使用这些数据    
+    this.setData({
+      'agentConfig.welcomeMessage': '新的欢迎语!',
+      'phoneNumber': phoneNumber,
+      'name': name
+    });
   },
 
   /**

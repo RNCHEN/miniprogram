@@ -112,7 +112,7 @@ Component({
     page: 1,
     size: 10,
     total: 0,
-    refreshText: '下拉加载历史记录',
+    refreshText: '欢迎您的使用',
     contentHeightInScrollViewTop: 0, // scroll区域顶部固定区域高度
     shouldAddScrollTop: false,
     displayPhoneNumber: '',
@@ -120,60 +120,37 @@ Component({
   },
 
   attached: async function () {
-    console.log('attached', this.data)
+    console.log('attached  this.data', this.data)
     console.log('attached', this.properties)
     const { botId, type } = this.data.agentConfig;
+
     // 检查配置
     const [check, message] = checkConfig(this.data.agentConfig);
-    if (!check) {
-      wx.showModal({
-        title: "提示",
-        content: message,
-      });
-      this.setData({
-        showGuide: true
-      });
-      return;
-    } else {
-      this.setData({
-        showGuide: false
-      });
-    }
-    if (type === "bot") {
-      const ai = wx.cloud.extend.AI;
-      const bot = await ai.bot.get({
-        botId
-      });
-      // 新增错误提示
-      if (bot.code) {
-        wx.showModal({
-          title: "提示",
-          content: bot.message,
-        });
-        return;
-      }
+    console.log('attached  check', check)
+    console.log('attached  message', message)
+    console.log('attached  type', type)
 
+
+    // 根据不同的用户mode来设置不同的欢迎消息
+    let customWelcomeMessage = '';
+
+    
+    if (type === "bot") {
       // 初始化第一条记录为欢迎消息
+      const { chatRecords } = this.data;
       const welcomeMessage = {
-        content: "你好，任何事情都可以告诉我", // 设置欢迎消息
+        content: customWelcomeMessage, // 设置欢迎消息
         record_id: "record_id" + String(+new Date() + 10),
         role: "assistant",
-        hiddenBtnGround: true,
+        hiddenBtnGround: false,
       };
 
-      // 随机选取三个初始化问题
-      const questions = randomSelectInitquestion(bot.initQuestions, 3);
-      let allowWebSearch = this.data.agentConfig.allowWebSearch;
-      console.log('allowWebSearch', allowWebSearch);
-      allowWebSearch = allowWebSearch === undefined ? true : allowWebSearch;
       this.setData({
-        bot,
-        questions,
         chatRecords: [welcomeMessage, ...chatRecords], // 将欢迎消息添加到聊天记录
-        showWebSearchSwitch: !!(bot.searchEnable && allowWebSearch),
       });
     }
-    const { chatRecords } = this.data;
+
+    console.log('attached  chatRecords', chatRecords)
     const topHeight = await this.calculateContentInTop();
     console.log('topHeight', topHeight);
     this.setData({
@@ -382,7 +359,7 @@ Component({
         return;
       }
       const record = {
-        content: "你好，任何事情都可以告诉我",
+        content: "你好，任何事情都可以告诉我22",
         record_id: "record_id" + String(+new Date() + 10),
         role: "assistant",
         hiddenBtnGround: true,
@@ -547,7 +524,8 @@ Component({
     },
     // TODO send to backend api https://momecho.work/chat
     sendMessage: async function (event) {
-      console.log('发送消息 sendMessage', this.displayPhoneNumber, this.displayName)
+      const { phoneNumber, name } = this.properties;
+      console.log('发送消息 sendMessage', phoneNumber, name)
       if (this.data.showFileList) {
         this.setData({
           showFileList: !this.data.showFileList,
@@ -608,16 +586,18 @@ Component({
         });
       }
       // model = gentle or professional
-      // random model 
+      // get model, if not set, random model 
+
+
       let chatModel = "professional"
-      // if (Math.random() > 0.5) {
-      //   chatModel = "professional"
-      // }
+      if (Math.random() > 0.5) {
+        chatModel = "professional"
+      }
       // 调用后端接口
       // 构建消息对象
       const messageBody = {
-        usr_name: "test6", // 替换为实际的用户名称
-        conversation_id: "45678", // 替换为实际的会话ID
+        usr_name: name,
+        phone_number: phoneNumber,
         text: inputValue,
         sender: "user", // 发送者标识
         model: chatModel
