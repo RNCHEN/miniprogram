@@ -116,7 +116,10 @@ Component({
     contentHeightInScrollViewTop: 0, // scroll区域顶部固定区域高度
     shouldAddScrollTop: false,
     displayPhoneNumber: '',
-    displayName: ''
+    displayName: '',
+    showRating: false,
+    emotionRating: '',
+    scaleRating: null
   },
 
   attached: async function () {
@@ -237,7 +240,25 @@ Component({
 
     console.log('attached displayPhoneNumber', this.data.displayPhoneNumber)
     console.log('attached displayName', this.data.displayName)
+
+    // 监听聊天记录变化
+    this._observer = this.createIntersectionObserver();
+    this._observer
+      .relativeToViewport()
+      .observe('.system', (res) => {
+        if (res.intersectionRatio > 0 && !this.data.showRating) {
+          // 当第一条机器人消息出现在视图中时显示评分
+          this.setData({
+            showRating: true
+          });
+        }
+      });
   },
+
+  detached: function() {
+    if (this._observer) this._observer.disconnect();
+  },
+
   methods: {
     // 滚动相关处理
     calculateContentHeight() {
@@ -1004,6 +1025,13 @@ Component({
           chatStatus: 0
         }); // 回正
       }
+
+      // 在消息发送完成后，显示评分组件
+      if (this.data.chatRecords.length === 2) { // 假设第一条是系统消息，第二条是用户消息，第三条是回复
+        this.setData({
+          showRating: true
+        });
+      }
     },
     toBottom: async function (unit) {
       const addUnit = unit === undefined ? 4 : unit
@@ -1181,5 +1209,55 @@ Component({
         useWebSearch: !this.data.useWebSearch,
       });
     },
+    // 选择情绪评分
+    selectEmotion: function(e) {
+      const value = e.currentTarget.dataset.value;
+      this.setData({
+        emotionRating: value
+      });
+    },
+    
+    // 选择正负面评分
+    selectScale: function(e) {
+      const value = e.currentTarget.dataset.value;
+      this.setData({
+        scaleRating: value
+      });
+    },
+    
+    // 提交评分
+    submitRating: function() {
+      const { emotionRating, scaleRating } = this.data;
+      
+      // 验证是否已选择
+      if (!emotionRating || !scaleRating) {
+        wx.showToast({
+          title: '请完成2个选择~',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      // 这里可以添加向服务器提交评分的逻辑
+      console.log('评分提交:', { emotionRating, scaleRating });
+      
+      // 提交成功后隐藏评分组件
+      wx.showToast({
+        title: '评价已提交',
+        icon: 'success'
+      });
+      
+      this.setData({
+        showRating: false
+      });
+    },
+    // 在接收到机器人回复后显示评分
+    onMessageReceived: function(message) {
+      if (message.role === 'assistant' && !this.data.showRating) {
+        this.setData({
+          showRating: true
+        });
+      }
+    }
   },
 });

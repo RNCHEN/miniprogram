@@ -105,6 +105,38 @@
         </view>
       </view>
     </block>
+    <!-- 在聊天记录下方添加评分组件 -->
+    <view class="rating-container" wx:if="{{showRating}}">
+      <view class="rating-title">请你思考/回忆让你最近烦恼的事情，⽆论是情绪/还是身体上的担忧</view>
+      
+      <!-- 情绪程度选择 -->
+      <view class="rating-question">
+        <view class="question-text">1. 情绪的程度：</view>
+        <view class="options-container">
+          <view class="option {{emotionRating === 'A' ? 'selected' : ''}}" bindtap="selectEmotion" data-value="A">A. 生气</view>
+          <view class="option {{emotionRating === 'B' ? 'selected' : ''}}" bindtap="selectEmotion" data-value="B">B. 烦恼</view>
+          <view class="option {{emotionRating === 'C' ? 'selected' : ''}}" bindtap="selectEmotion" data-value="C">C. 开心</view>
+        </view>
+      </view>
+      
+      <!-- 正负面评分 -->
+      <view class="rating-question">
+        <view class="question-text">2. positive(5)/ negative(-5)：</view>
+        <view class="scale-container">
+          <view 
+            wx:for="{{[-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]}}" 
+            wx:key="index"
+            class="scale-option {{scaleRating === item ? 'selected' : ''}}"
+            bindtap="selectScale"
+            data-value="{{item}}"
+          >
+            {{item}}
+          </view>
+        </view>
+      </view>
+      
+      <button class="submit-rating" bindtap="submitRating">提交评价</button>
+    </view>
   </scroll-view>
   <!-- 底部输入区 -->
   <view class="footer">
