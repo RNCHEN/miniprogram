@@ -117,9 +117,11 @@ Component({
     shouldAddScrollTop: false,
     displayPhoneNumber: '',
     displayName: '',
-    showRating: false,
+    showRating: true, // 一开始就显示评分
     emotionRating: '',
-    scaleRating: null
+    scaleRating: null,
+    timer: null,
+    secondRatingShown: false, // 标记第二次评分是否已显示
   },
 
   attached: async function () {
@@ -253,10 +255,30 @@ Component({
           });
         }
       });
+    
+    // 开始计时，30秒后再次显示评分
+    const timer = setTimeout(() => {
+      console.log('30秒已到，显示第二次评分');
+      if (!this.data.secondRatingShown) {
+        this.setData({
+          showRating: true,
+          secondRatingShown: true,
+          emotionRating: '', // 重置评分
+          scaleRating: null
+        });
+      }
+    }, 30 * 1000); // 30秒
+    
+    this.setData({ timer });
   },
 
   detached: function() {
     if (this._observer) this._observer.disconnect();
+    
+    // 清除计时器
+    if (this.data.timer) {
+      clearTimeout(this.data.timer);
+    }
   },
 
   methods: {
@@ -1219,7 +1241,7 @@ Component({
     
     // 选择正负面评分
     selectScale: function(e) {
-      const value = e.currentTarget.dataset.value;
+      const value = parseInt(e.currentTarget.dataset.value);
       this.setData({
         scaleRating: value
       });
@@ -1227,19 +1249,26 @@ Component({
     
     // 提交评分
     submitRating: function() {
-      const { emotionRating, scaleRating } = this.data;
+      const { emotionRating, scaleRating, secondRatingShown } = this.data;
       
       // 验证是否已选择
-      if (!emotionRating || !scaleRating) {
+      if (!emotionRating || scaleRating === null) {
         wx.showToast({
-          title: '请完成2个选择~',
+          title: '请完成所有评价',
           icon: 'none'
         });
         return;
       }
       
-      // 这里可以添加向服务器提交评分的逻辑
-      console.log('评分提交:', { emotionRating, scaleRating });
+      // 假设提交总是成功
+      console.log('评分提交:', {
+        phoneNumber: this.properties.phoneNumber,
+        name: this.properties.name,
+        emotionRating,
+        scaleRating,
+        isSecondRating: secondRatingShown,
+        timestamp: new Date().toISOString()
+      });
       
       // 提交成功后隐藏评分组件
       wx.showToast({
@@ -1250,10 +1279,26 @@ Component({
       this.setData({
         showRating: false
       });
+      
+      // 如果是第一次评分，30秒后显示第二次评分
+      if (!secondRatingShown) {
+        console.log('设置30秒后显示第二次评分');
+        const timer = setTimeout(() => {
+          console.log('30秒已到，显示第二次评分');
+          this.setData({
+            showRating: true,
+            secondRatingShown: true,
+            emotionRating: '',
+            scaleRating: null
+          });
+        }, 30 * 1000); // 30秒
+        
+        this.setData({ timer });
+      }
     },
     // 在接收到机器人回复后显示评分
     onMessageReceived: function(message) {
-      if (message.role === 'assistant' && !this.data.showRating) {
+      if (message.role === 'assistant' && !this.data.showRating && !this.data.secondRatingShown) {
         this.setData({
           showRating: true
         });
