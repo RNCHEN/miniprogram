@@ -45,10 +45,11 @@ Page({
     console.log('登录手机号:', phoneNumber);
     // TODO 调用后端接口注册 /api/users post 请求
     wx.request({
-      url: 'https://momecho.work/api/users/create_user',
+      // url: 'https://momecho.work/api/users/create_user',
+      url: 'http://127.0.0.1:8000/api/users/create_user',
       method: 'POST',
       data: {
-        phoneNumber: phoneNumber,
+        phone: parseInt(phoneNumber),
         name: name
       },
       success: (res) => {
@@ -69,14 +70,14 @@ Page({
         setTimeout(() => {
           wx.reLaunch({
             url: `/pages/chatBot/chatBot?phoneNumber=${encodeURIComponent(phoneNumber)}&name=${encodeURIComponent(name)}`,
-            fail: (err) => {
-              console.error('跳转失败:', err);
+          fail: (err) => {
+            console.error('跳转失败:', err);
               wx.showToast({
                 title: '跳转失败',
                 icon: 'none'
               });
-            }
-          });
+          }
+        });
         }, 1500);
       }
     });
