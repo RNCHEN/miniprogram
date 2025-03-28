@@ -1,7 +1,8 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/chatBot/chatBot"
+    "pages/chatBot/chatBot",
+    "pages/survey/survey"
   ],
   "window": {
     "navigationBarBackgroundColor": "#ffffff",

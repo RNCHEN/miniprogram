@@ -716,7 +716,7 @@ Component({
       try {
         res = await new Promise((resolve, reject) => {
           wx.request({
-            url: 'https://momecho.work/chat', // 替换为你的后端 API 地址
+            url: 'http://127.0.0.1:8000/chat', //
             method: 'POST',
             header: {
               'Content-Type': 'application/json',
@@ -1294,6 +1294,22 @@ Component({
         }, 30 * 1000); // 30秒
         
         this.setData({ timer });
+      } else {
+        // 如果是第二次评分，跳转到 survey 页面
+        console.log('第二次评分完成，准备跳转到 survey 页面');
+        
+        // 使用 setTimeout 确保 Toast 显示完成后再跳转
+        setTimeout(() => {
+          wx.navigateTo({
+            url: '/pages/survey/survey',
+            success: () => {
+              console.log('成功跳转到 survey 页面');
+            },
+            fail: (err) => {
+              console.error('跳转到 survey 页面失败:', err);
+            }
+          });
+        }, 1500); // 等待 Toast 显示完成
       }
     },
     // 在接收到机器人回复后显示评分
