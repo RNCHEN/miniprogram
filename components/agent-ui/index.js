@@ -164,34 +164,34 @@ Component({
     // 根据不同的用户mode来设置不同的欢迎消息
     // let customWelcomeMessage = '感谢你分享你的感受。我们的健康小助手随时在这里支持你。你可以：\n\n• 向小助手倾诉你的担忧与压力，表达你的情绪与想法。\n• 提出你在育儿过程中遇到的具体问题或困惑。\n• 询问与健康、情感支持或日常护理相关的建议。\n\n我们的小助手会根据你的感受和需求，提供更贴合你情况的个性化帮助。希望能为你带来更多的支持与安慰。\n\n请随时与健康小助手开始对话。';
     let res = null;
-    try {
-      res = await new Promise((resolve, reject) => {
-        wx.request({
-          url: 'https://momecho.work/api/users/${phoneNumber}', // 替换为你的后端 API 地址
-          method: 'GET',
-          header: {
-            'Content-Type': 'application/json',
-          },
-          success: (response) => {
-            if (response.statusCode === 200) {
-              resolve(response.data);
-            } else {
-              console.error("HTTP 错误:", response.statusCode);
-              reject(new Error("HTTP 错误: " + response.statusCode));
-            }
-          },
-          fail: (error) => {
-            console.error("请求失败:", error);
-            reject(error);
-          }
-        });
-      });
-    } catch (error) {
-      console.error('请求失败:', error);
-      res = {
-        response: "网络连接失败"
-      }; // 发生错误时，提供默认值
-    }
+    // try {
+    //   res = await new Promise((resolve, reject) => {
+    //     wx.request({
+    //       url: 'https://momecho.work/api/users/${phoneNumber}', // 替换为你的后端 API 地址
+    //       method: 'GET',
+    //       header: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       success: (response) => {
+    //         if (response.statusCode === 200) {
+    //           resolve(response.data);
+    //         } else {
+    //           console.error("HTTP 错误:", response.statusCode);
+    //           reject(new Error("HTTP 错误: " + response.statusCode));
+    //         }
+    //       },
+    //       fail: (error) => {
+    //         console.error("请求失败:", error);
+    //         reject(error);
+    //       }
+    //     });
+    //   });
+    // } catch (error) {
+    //   console.error('请求失败:', error);
+    //   res = {
+    //     response: "网络连接失败"
+    //   }; // 发生错误时，提供默认值
+    // }
     const responseMessage = res.response || "hello world";
     //  get the user mode
     // TODO test
