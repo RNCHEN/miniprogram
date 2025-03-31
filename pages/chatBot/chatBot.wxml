@@ -1,8 +1,8 @@
 <!-- pages/chatBot/chatBot.wxml -->
-<view class="welcome-container">
+<!-- <view class="welcome-container">
   <text class="welcome-text">
 ✨ 欢迎来到 Momecho! ✨
 你好, 我们是 Momecho, 专为新手妈妈设计的 AI 健康小助手 🤱💙
 </text>
-</view>
+</view> -->
 <agent-ui agentConfig="{{agentConfig}}" showBotAvatar="{{true}}" phoneNumber="{{phoneNumber}}" name="{{name}}"></agent-ui>

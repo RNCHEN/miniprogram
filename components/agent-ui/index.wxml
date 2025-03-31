@@ -107,24 +107,56 @@
     </block>
     <!-- 在聊天记录下方添加评分组件 -->
     <view class="rating-container" wx:if="{{showRating}}">
-      <view class="rating-title">请你思考/回忆让你最近烦恼的事情，⽆论是情绪/还是身体上的担忧</view>
+      <view class="rating-title">
+        <!-- 根据是否是第二次评分显示不同的标题 -->
+        <block wx:if="{{secondRatingShown}}">
+          <view class="second-rating-title">
+            <view class="normal-text">⾮常感谢你与健康⼩助⼿的互动！希望我们的对话能够为你带来⼀些安慰与⽀持。</view>
+            <view class="normal-text">为了帮助我们更好地了解你在与⼩助⼿交流后的感受与想法，我们邀请你再⼀次填写以下评分表。这不仅能帮助我们优化服务，还能让你更清楚地看到⾃⼰的情绪变化与改善。</view>
+            <view>现在，请根据你的当前感受，完成以下评分。⽆论你的情绪是否有所好转，我们都⾮常珍视你的反馈。谢谢你的参与与信任！</view>
+            <view> 提交评分后，页面将自动跳转至问卷填写页面。完成问卷后，你将获得红包奖励 </view>
+          </view>
+        </block>
+        <block wx:else>
+          <view class="first-rating-title">
+            <view>现在，我们希望你回想⼀下你作为新⼿妈妈所经历的那些让你感到担忧或焦虑的时刻。请尽可能详细地回忆⼀个具体的情境或事件。</view>
+            <view class="normal-text">例如，这个事件可能与以下⽅⾯相关：</view>
+            <view class="bullet-point normal-text">• 情感上的担忧： 如对宝宝的照顾感到不安，或感到孤独和缺乏⽀持。</view>
+            <view class="bullet-point normal-text">• 经济上的压⼒： 如养育孩⼦的费⽤、家庭开⽀增加或⼯作与育⼉的平衡问题。</view>
+            <view class="bullet-point normal-text">• 健康上的顾虑： 如⾃⼰的身体恢复问题、宝宝的健康状况或喂养的困难。</view>
+            <view>请花⼀些时间来仔细回忆这个事件，并尝试回想当时你具体感受到的情绪（例如：焦虑、害怕、⽆助等）。</view>
+            <view>当你做好准备后，请完成以下评分，这将帮助我们的健康⼩助⼿更好地理解你的感受，并为你提供更个性化的帮助。请放⼼，您的隐私和填写内容将得到严格保护，不会被泄露或⽤于未经授权的⽤途。</view>
+          </view>
+        </block>
+      </view>
       
-      <!-- 情绪程度选择 -->
+      <!-- 情绪强度选择 -->
       <view class="rating-question">
-        <view class="question-text">1. 情绪的程度：</view>
+        <view class="question-text">
+          1. {{secondRatingShown ? firstQuestion.second : firstQuestion.first}}
+        </view>
         <view class="options-container">
-          <view class="option {{emotionRating === 'A' ? 'selected' : ''}}" bindtap="selectEmotion" data-value="A">A. 生气</view>
-          <view class="option {{emotionRating === 'B' ? 'selected' : ''}}" bindtap="selectEmotion" data-value="B">B. 烦恼</view>
-          <view class="option {{emotionRating === 'C' ? 'selected' : ''}}" bindtap="selectEmotion" data-value="C">C. 开心</view>
+          <view 
+            wx:for="{{emotionOptions}}" 
+            wx:key="value"
+            class="option {{emotionRating === item.value ? 'selected' : ''}}" 
+            bindtap="selectEmotion" 
+            data-value="{{item.value}}"
+          >
+            {{item.label}}
+          </view>
         </view>
       </view>
       
-      <!-- 正负面评分 -->
+      <!-- 情绪状态评分 -->
       <view class="rating-question">
-        <view class="question-text">2. positive(5)/ negative(-5)：</view>
+        <view class="question-text">
+          2. {{secondRatingShown ? secondQuestion.second : secondQuestion.first}}
+        </view>
+        <view class="scale-description">说明：-5 （⾮常消极）0 （中性）+5 （⾮常积极）</view>
         <view class="scale-container">
           <view 
-            wx:for="{{[-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]}}" 
+            wx:for="{{scaleOptions}}" 
             wx:key="index"
             class="scale-option {{scaleRating === item ? 'selected' : ''}}"
             bindtap="selectScale"

@@ -122,6 +122,31 @@ Component({
     scaleRating: null,
     timer: null,
     secondRatingShown: false, // 标记第二次评分是否已显示
+    firstRatingTitle: '现在，我们希望你回想⼀下你作为新⼿妈妈所经历的那些让你感到担忧或焦虑的时刻。请尽可能详细地回忆⼀个具体的情境或事件。\n例如，这个事件可能与以下⽅⾯相关：\n• 情感上的担忧： 如对宝宝的照顾感到不安，或感到孤独和缺乏⽀持。\n• 经济上的压⼒： 如养育孩⼦的费⽤、家庭开⽀增加或⼯作与育⼉的平衡问题。\n• 健康上的顾虑： 如⾃⼰的身体恢复问题、宝宝的健康状况或喂养的困难。\n请花⼀些时间来仔细回忆这个事件，并尝试回想当时你具体感受到的情绪（例如：焦虑、害怕、⽆助等）。\n当你做好准备后，请完成以下评分，这将帮助我们的健康⼩助⼿更好地理解你的感受，并为你提供更个性化的帮助。请放⼼，您的隐私和填写内容将得到严格保护，不会被泄露或⽤于未经授权的⽤途。',
+    secondRatingTitle: '⾮常感谢你与健康⼩助⼿的互动！希望我们的对话能够为你带来⼀些安慰与⽀持。\n为了帮助我们更好地了解你在与⼩助⼿交流后的感受与想法，我们邀请你再⼀次填写以下评分表。这不仅能帮助我们优化服务，还能让你更清楚地看到⾃⼰的情绪变化与改善。\n现在，请根据你的当前感受，完成以下评分。⽆论你的情绪是否有所好转，我们都⾮常珍视你的反馈。谢谢你的参与与信任！',
+    // 欢迎消息
+    customWelcomeMessage: '感谢你分享你的感受。我们的健康小助手随时在这里支持你。你可以：\n\n• 向小助手倾诉你的担忧与压力，表达你的情绪与想法。\n• 提出你在育儿过程中遇到的具体问题或困惑。\n• 询问与健康、情感支持或日常护理相关的建议。\n\n我们的小助手会根据你的感受和需求，提供更贴合你情况的个性化帮助。希望能为你带来更多的支持与安慰。\n\n请随时与健康小助手开始对话。',
+    // 情绪强度选项
+    emotionOptions: [
+      { value: '1', label: '1-完全没有' },
+      { value: '2', label: '2-⾮常轻微' },
+      { value: '3', label: '3-轻微' },
+      { value: '4', label: '4-中等' },
+      { value: '5', label: '5-较强烈' },
+      { value: '6', label: '6-⾮常强烈' },
+      { value: '7', label: '7-极其强烈' }
+    ],
+    // 情绪状态选项
+    scaleOptions: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+    // 第二次问卷的问题
+    firstQuestion: {
+      first: '请根据你刚刚回忆的事件，评价你此刻感受到的情绪强度。',
+      second: '请回想你之前提到的那个让你感到担忧或焦虑的事件。现在，当你再次回忆起这个事件时，你的情绪感受是怎样的？'
+    },
+    secondQuestion: {
+      first: '请评价你当前的整体情绪状态。请根据你现在整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。',
+      second: '现在，请评价你在与⼩助⼿互动后的整体情绪状态。请根据你此刻整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。'
+    }
   },
 
   attached: async function () {
@@ -137,7 +162,7 @@ Component({
 
 
     // 根据不同的用户mode来设置不同的欢迎消息
-    let customWelcomeMessage = '你好，有什么心事都可以和我说哦';
+    // let customWelcomeMessage = '感谢你分享你的感受。我们的健康小助手随时在这里支持你。你可以：\n\n• 向小助手倾诉你的担忧与压力，表达你的情绪与想法。\n• 提出你在育儿过程中遇到的具体问题或困惑。\n• 询问与健康、情感支持或日常护理相关的建议。\n\n我们的小助手会根据你的感受和需求，提供更贴合你情况的个性化帮助。希望能为你带来更多的支持与安慰。\n\n请随时与健康小助手开始对话。';
     let res = null;
     try {
       res = await new Promise((resolve, reject) => {
@@ -716,7 +741,7 @@ Component({
       try {
         res = await new Promise((resolve, reject) => {
           wx.request({
-            url: 'http://127.0.0.1:8000/chat', //
+            url: 'http://127.0.0.1:8000/api/chat/chat', //
             method: 'POST',
             header: {
               'Content-Type': 'application/json',
@@ -1280,8 +1305,20 @@ Component({
         showRating: false
       });
       
-      // 如果是第一次评分，30秒后显示第二次评分
+      // 如果是第一次评分，添加欢迎消息到聊天记录，然后30秒后显示第二次评分
       if (!secondRatingShown) {
+        console.log('第一次评分完成，添加欢迎消息到聊天记录');
+        
+        // 添加欢迎消息到聊天记录
+        const welcomeMessage = {
+          role: 'assistant',
+          content: this.data.customWelcomeMessage
+        };
+        
+        this.setData({
+          chatRecords: [...this.data.chatRecords, welcomeMessage]
+        });
+        
         console.log('设置30秒后显示第二次评分');
         const timer = setTimeout(() => {
           console.log('30秒已到，显示第二次评分');
