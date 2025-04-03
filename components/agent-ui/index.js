@@ -6,8 +6,10 @@ import {
 } from "./tools";
 
 // 在组件外部定义 API 基础 URL
-const API_BASE_URL = 'https://momecho.work';
+// const API_BASE_URL = 'https://momecho.work';
+const API_BASE_URL = 'http://127.0.0.1:8000';
 
+const TIMEOUT_SECOND = 1 * 60 * 1000;
 Component({
   properties: {
     showBotAvatar: {
@@ -304,7 +306,7 @@ Component({
           scaleRating: null
         });
       }
-    }, 8 *60 * 1000); // 8分钟
+    }, TIMEOUT_SECOND); // 8分钟
     
     this.setData({ timer });
   },
@@ -1343,7 +1345,7 @@ Component({
                 emotionRating: '',
                 scaleRating: null
               });
-            },8* 60 * 1000); // 8分钟
+            },TIMEOUT_SECOND); // 8分钟
             
             this.setData({ timer });
           } else {
