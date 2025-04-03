@@ -4,6 +4,10 @@ import {
   checkConfig,
   randomSelectInitquestion
 } from "./tools";
+
+// 在组件外部定义 API 基础 URL
+const API_BASE_URL = 'https://momecho.work';
+
 Component({
   properties: {
     showBotAvatar: {
@@ -146,7 +150,8 @@ Component({
     secondQuestion: {
       first: '请评价你当前的整体情绪状态。请根据你现在整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。',
       second: '现在，请评价你在与⼩助⼿互动后的整体情绪状态。请根据你此刻整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。'
-    }
+    },
+    chatModel: '', // 存储聊天模型类型
   },
 
   attached: async function () {
@@ -160,6 +165,13 @@ Component({
     console.log('attached  message', message)
     console.log('attached  type', type)
 
+    // 随机选择聊天模型，并只选择一次
+    const chatModel = Math.random() > 0.5 ? "professional" : "gentle";
+    console.log(`初始化聊天模型: ${chatModel}`);
+    
+    this.setData({
+      chatModel: chatModel
+    });
 
     // 根据不同的用户mode来设置不同的欢迎消息
     // let customWelcomeMessage = '感谢你分享你的感受。我们的健康小助手随时在这里支持你。你可以：\n\n• 向小助手倾诉你的担忧与压力，表达你的情绪与想法。\n• 提出你在育儿过程中遇到的具体问题或困惑。\n• 询问与健康、情感支持或日常护理相关的建议。\n\n我们的小助手会根据你的感受和需求，提供更贴合你情况的个性化帮助。希望能为你带来更多的支持与安慰。\n\n请随时与健康小助手开始对话。';
@@ -234,7 +246,7 @@ Component({
 
     console.log('attached  chatRecords', chatRecords)
     const welcomeMessage = {
-      content: customWelcomeMessage, // 设置欢迎消息
+      content: this.data.customWelcomeMessage, // 设置欢迎消息
       record_id: "record_id" + String(+new Date() + 10),
       role: "assistant",
       hiddenBtnGround: false,
@@ -718,14 +730,9 @@ Component({
           sendFileList: [],
         });
       }
-      // model = gentle or professional
-      // get model, if not set, random model 
-
-
-      let chatModel = "gentle"
-      if (Math.random() > 0.5) {
-        chatModel = "professional"
-      }
+      // 使用已存储的聊天模型，而不是每次重新随机
+      const chatModel = this.data.chatModel;
+      
       // 调用后端接口
       // 构建消息对象
       const messageBody = {
@@ -741,7 +748,7 @@ Component({
       try {
         res = await new Promise((resolve, reject) => {
           wx.request({
-            url: 'http://127.0.0.1:8000/api/chat/chat', //
+            url: `${API_BASE_URL}/api/chat/chat`,
             method: 'POST',
             header: {
               'Content-Type': 'application/json',
@@ -1299,7 +1306,7 @@ Component({
       
       // 提交评分数据到服务器
       wx.request({
-        url: `http://127.0.0.1:8000/api/users/${this.properties.phoneNumber}`, // 替换为实际的API端点
+        url: `${API_BASE_URL}/api/users/${this.properties.phoneNumber}`, // 使用变量构建 URL
         method: 'POST',
         data: ratingData,
         success: (res) => {
@@ -1318,7 +1325,7 @@ Component({
           // 如果是第一次评分，添加欢迎消息到聊天记录，然后30秒后显示第二次评分
           if (!secondRatingShown) {
             console.log('第一次评分完成，添加欢迎消息到聊天记录');
-        
+            
             // 添加欢迎消息到聊天记录
             const welcomeMessage = {
               role: 'assistant',
