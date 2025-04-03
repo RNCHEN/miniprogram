@@ -281,9 +281,9 @@ Component({
         }
       });
     
-    // 开始计时，30秒后再次显示评分
+    // 开始计时， 8分钟 后显示第二次评分
     const timer = setTimeout(() => {
-      console.log('30秒已到，显示第二次评分');
+      console.log('8min已到，显示第二次评分');
       if (!this.data.secondRatingShown) {
         this.setData({
           showRating: true,
@@ -292,7 +292,7 @@ Component({
           scaleRating: null
         });
       }
-    }, 8* 60 * 1000); // 30秒
+    }, 8 *60 * 1000); // 8分钟
     
     this.setData({ timer });
   },
@@ -1285,69 +1285,86 @@ Component({
         return;
       }
       
-      // 假设提交总是成功
-      console.log('评分提交:', {
+      // 准备提交数据
+      const ratingData = {
         phoneNumber: this.properties.phoneNumber,
         name: this.properties.name,
         emotionRating,
         scaleRating,
         isSecondRating: secondRatingShown,
         timestamp: new Date().toISOString()
-      });
+      };
       
-      // 提交成功后隐藏评分组件
-      wx.showToast({
-        title: '评价已提交',
-        icon: 'success'
-      });
+      console.log('准备提交评分数据:', ratingData);
       
-      this.setData({
-        showRating: false
-      });
-      
-      // 如果是第一次评分，添加欢迎消息到聊天记录，然后30秒后显示第二次评分
-      if (!secondRatingShown) {
-        console.log('第一次评分完成，添加欢迎消息到聊天记录');
-        
-        // 添加欢迎消息到聊天记录
-        const welcomeMessage = {
-          role: 'assistant',
-          content: this.data.customWelcomeMessage
-        };
-        
-        this.setData({
-          chatRecords: [...this.data.chatRecords, welcomeMessage]
-        });
-        
-        console.log('设置30秒后显示第二次评分');
-        const timer = setTimeout(() => {
-          console.log('30秒已到，显示第二次评分');
+      // 提交评分数据到服务器
+      wx.request({
+        url: `http://127.0.0.1:8000/api/users/${this.properties.phoneNumber}`, // 替换为实际的API端点
+        method: 'POST',
+        data: ratingData,
+        success: (res) => {
+          console.log('评分提交成功:', res.data);
+          
+          // 提交成功后隐藏评分组件
+          wx.showToast({
+            title: '评价已提交',
+            icon: 'success'
+          });
+          
           this.setData({
-            showRating: true,
-            secondRatingShown: true,
-            emotionRating: '',
-            scaleRating: null
+            showRating: false
           });
-        }, 8 * 60 * 1000); // 30秒
+          
+          // 如果是第一次评分，添加欢迎消息到聊天记录，然后30秒后显示第二次评分
+          if (!secondRatingShown) {
+            console.log('第一次评分完成，添加欢迎消息到聊天记录');
         
-        this.setData({ timer });
-      } else {
-        // 如果是第二次评分，跳转到 survey 页面
-        console.log('第二次评分完成，准备跳转到 survey 页面');
-        
-        // 使用 setTimeout 确保 Toast 显示完成后再跳转
-        setTimeout(() => {
-          wx.navigateTo({
-            url: '/pages/survey/survey',
-            success: () => {
-              console.log('成功跳转到 survey 页面');
-            },
-            fail: (err) => {
-              console.error('跳转到 survey 页面失败:', err);
-            }
+            // 添加欢迎消息到聊天记录
+            const welcomeMessage = {
+              role: 'assistant',
+              content: this.data.customWelcomeMessage
+            };
+            
+            this.setData({
+              chatRecords: [...this.data.chatRecords, welcomeMessage]
+            });
+            
+            const timer = setTimeout(() => {
+              this.setData({
+                showRating: true,
+                secondRatingShown: true,
+                emotionRating: '',
+                scaleRating: null
+              });
+            },8* 60 * 1000); // 8分钟
+            
+            this.setData({ timer });
+          } else {
+            // 如果是第二次评分，跳转到 survey 页面
+            console.log('第二次评分完成，准备跳转到 survey 页面');
+            
+            // 使用 setTimeout 确保 Toast 显示完成后再跳转
+            setTimeout(() => {
+              wx.navigateTo({
+                url: '/pages/survey/survey',
+                success: () => {
+                  console.log('成功跳转到 survey 页面');
+                },
+                fail: (err) => {
+                  console.error('跳转到 survey 页面失败:', err);
+                }
+              });
+            }, 1500); // 等待 Toast 显示完成
+          }
+        },
+        fail: (err) => {
+          console.error('评分提交失败:', err);
+          wx.showToast({
+            title: '提交失败，请重试',
+            icon: 'none'
           });
-        }, 1500); // 等待 Toast 显示完成
-      }
+        }
+      });
     },
     // 在接收到机器人回复后显示评分
     onMessageReceived: function(message) {
