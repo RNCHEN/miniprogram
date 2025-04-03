@@ -292,7 +292,7 @@ Component({
           scaleRating: null
         });
       }
-    }, 60 * 1000); // 30秒
+    }, 8* 60 * 1000); // 30秒
     
     this.setData({ timer });
   },
@@ -1328,7 +1328,7 @@ Component({
             emotionRating: '',
             scaleRating: null
           });
-        }, 60 * 1000); // 30秒
+        }, 8 * 60 * 1000); // 30秒
         
         this.setData({ timer });
       } else {
