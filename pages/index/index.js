@@ -1,3 +1,9 @@
+const CONFIG = {
+  // API_BASE_URL: 'https://momecho.work',
+  API_BASE_URL: 'http://127.0.0.1:8000',
+  TIMEOUT_DURATION: 2 * 60 * 1000 // 8分钟，单位为毫秒
+};
+
 Page({
   data: {
     phoneNumber: '', // 存储用户输入的手机号
@@ -22,7 +28,8 @@ Page({
   // 登录
   handleLogin() {
     const { phoneNumber, name } = this.data;
-    console.log(phoneNumber,name)
+    console.log(phoneNumber, name);
+    
     // 检查手机号和姓名是否都有值
     if (!phoneNumber || !name) {
       wx.showToast({
@@ -41,44 +48,50 @@ Page({
       return;
     }
 
-    // 这里需要调用后端接口验证
-    console.log('登录手机号:', phoneNumber);
-    // TODO 调用后端接口注册 /api/users post 请求
+    // 随机确定聊天模型
+    const chatModel = Math.random() > 0.5 ? "professional" : "gentle";
+    console.log(`为用户分配聊天模型: ${chatModel}`);
+
+    // 调用后端接口注册用户
     wx.request({
-      // url: 'https://momecho.work/api/users/create_user',
-      url: 'http://127.0.0.1:8000/api/users/create_user',
+      url: `${CONFIG.API_BASE_URL}/api/users/create_user`,
       method: 'POST',
       data: {
         phone: parseInt(phoneNumber),
-        name: name
+        name: name,
+        chat_model: chatModel // 将聊天模型传递给后端
       },
       success: (res) => {
         console.log('注册成功:', res);
+        
+        // 登录成功后的处理
+        wx.showToast({
+          title: '登录成功',
+          icon: 'success',
+          duration: 1500,
+          success: () => {
+            // 延迟跳转，让用户看到成功提示
+            setTimeout(() => {
+              wx.reLaunch({
+                url: `/pages/chatBot/chatBot?phoneNumber=${encodeURIComponent(phoneNumber)}&name=${encodeURIComponent(name)}&chatModel=${encodeURIComponent(chatModel)}`,
+                fail: (err) => {
+                  console.error('跳转失败:', err);
+                  wx.showToast({
+                    title: '跳转失败',
+                    icon: 'none'
+                  });
+                }
+              });
+            }, 1500);
+          }
+        });
       },
       fail: (err) => {
         console.error('注册失败:', err);
-      }
-    })
-    
-    // 登录成功后的处理
-    wx.showToast({
-      title: '登录成功',
-      icon: 'success',
-      duration: 1500,
-      success: () => {
-        // 延迟跳转，让用户看到成功提示
-        setTimeout(() => {
-          wx.reLaunch({
-            url: `/pages/chatBot/chatBot?phoneNumber=${encodeURIComponent(phoneNumber)}&name=${encodeURIComponent(name)}`,
-          fail: (err) => {
-            console.error('跳转失败:', err);
-              wx.showToast({
-                title: '跳转失败',
-                icon: 'none'
-              });
-          }
+        wx.showToast({
+          title: '注册失败，请重试',
+          icon: 'none'
         });
-        }, 1500);
       }
     });
   },

@@ -5,11 +5,13 @@ import {
   randomSelectInitquestion
 } from "./tools";
 
-// 在组件外部定义 API 基础 URL
-// const API_BASE_URL = 'https://momecho.work';
-const API_BASE_URL = 'http://127.0.0.1:8000';
+// 在组件外部定义全局配置变量
+const CONFIG = {
+  // API_BASE_URL: 'https://momecho.work',
+  API_BASE_URL: 'http://127.0.0.1:8000',
+  TIMEOUT_DURATION: 2 * 60 * 1000 // 8分钟，单位为毫秒
+};
 
-const TIMEOUT_SECOND = 1 * 60 * 1000;
 Component({
   properties: {
     showBotAvatar: {
@@ -36,6 +38,7 @@ Component({
       type: String,
       value: ''
     },
+    chatModel: String // 添加 chatModel 属性
   },
 
   observers: {
@@ -153,7 +156,6 @@ Component({
       first: '请评价你当前的整体情绪状态。请根据你现在整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。',
       second: '现在，请评价你在与⼩助⼿互动后的整体情绪状态。请根据你此刻整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。'
     },
-    chatModel: '', // 存储聊天模型类型
   },
 
   attached: async function () {
@@ -167,9 +169,16 @@ Component({
     console.log('attached  message', message)
     console.log('attached  type', type)
 
-    // 随机选择聊天模型，并只选择一次
-    const chatModel = Math.random() > 0.5 ? "professional" : "gentle";
-    console.log(`初始化聊天模型: ${chatModel}`);
+    // 使用传入的聊天模型
+
+    //   url: `https://momecho.work/api/chatRecords/${this.properties.phoneNumber}`,
+
+
+
+
+    
+    const chatModel =
+    console.log(`使用聊天模型: ${chatModel}`);
     
     this.setData({
       chatModel: chatModel
@@ -306,9 +315,23 @@ Component({
           scaleRating: null
         });
       }
-    }, TIMEOUT_SECOND); // 8分钟
+    }, CONFIG.TIMEOUT_DURATION); // 8分钟
     
     this.setData({ timer });
+
+    // 在组件创建时初始化超时定时器
+    this.timeoutTimer = setTimeout(() => {
+      console.log('会话超时，准备跳转到 survey 页面');
+      wx.navigateTo({
+        url: '/pages/survey/survey',
+        success: () => {
+          console.log('成功跳转到 survey 页面');
+        },
+        fail: (err) => {
+          console.error('跳转到 survey 页面失败:', err);
+        }
+      });
+    }, CONFIG.TIMEOUT_DURATION);
   },
 
   detached: function() {
@@ -734,6 +757,7 @@ Component({
       }
       // 使用已存储的聊天模型，而不是每次重新随机
       const chatModel = this.data.chatModel;
+      console.log('AAAAAAAchatModel', chatModel) 
       
       // 调用后端接口
       // 构建消息对象
@@ -750,7 +774,7 @@ Component({
       try {
         res = await new Promise((resolve, reject) => {
           wx.request({
-            url: `${API_BASE_URL}/api/chat/chat`,
+            url: `${CONFIG.API_BASE_URL}/api/chat/chat`,
             method: 'POST',
             header: {
               'Content-Type': 'application/json',
@@ -1308,7 +1332,7 @@ Component({
       
       // 提交评分数据到服务器
       wx.request({
-        url: `${API_BASE_URL}/api/users/${this.properties.phoneNumber}`, // 使用变量构建 URL
+        url: `${CONFIG.API_BASE_URL}/api/users/${this.properties.phoneNumber}`, // 使用变量构建 URL
         method: 'POST',
         data: ratingData,
         success: (res) => {
@@ -1345,7 +1369,7 @@ Component({
                 emotionRating: '',
                 scaleRating: null
               });
-            },TIMEOUT_SECOND); // 8分钟
+            }, CONFIG.TIMEOUT_DURATION); // 8分钟
             
             this.setData({ timer });
           } else {
