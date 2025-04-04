@@ -7,9 +7,9 @@ import {
 
 // 在组件外部定义全局配置变量
 const CONFIG = {
-  // API_BASE_URL: 'https://momecho.work',
-  API_BASE_URL: 'http://127.0.0.1:8000',
-  TIMEOUT_DURATION: 2 * 60 * 1000 // 8分钟，单位为毫秒
+  API_BASE_URL: 'https://momecho.work',
+  // API_BASE_URL: 'http://127.0.0.1:8000',
+  TIMEOUT_DURATION: 8 * 60 * 1000 // 8分钟，单位为毫秒
 };
 
 Component({
@@ -160,29 +160,14 @@ Component({
 
   attached: async function () {
     console.log('attached  this.data', this.data)
-    console.log('attached', this.properties)
     const { botId, type } = this.data.agentConfig;
 
     // 检查配置
     const [check, message] = checkConfig(this.data.agentConfig);
-    console.log('attached  check', check)
-    console.log('attached  message', message)
-    console.log('attached  type', type)
-
     // 使用传入的聊天模型
 
     //   url: `https://momecho.work/api/chatRecords/${this.properties.phoneNumber}`,
 
-
-
-
-    
-    const chatModel =
-    console.log(`使用聊天模型: ${chatModel}`);
-    
-    this.setData({
-      chatModel: chatModel
-    });
 
     // 根据不同的用户mode来设置不同的欢迎消息
     // let customWelcomeMessage = '感谢你分享你的感受。我们的健康小助手随时在这里支持你。你可以：\n\n• 向小助手倾诉你的担忧与压力，表达你的情绪与想法。\n• 提出你在育儿过程中遇到的具体问题或困惑。\n• 询问与健康、情感支持或日常护理相关的建议。\n\n我们的小助手会根据你的感受和需求，提供更贴合你情况的个性化帮助。希望能为你带来更多的支持与安慰。\n\n请随时与健康小助手开始对话。';
@@ -757,7 +742,7 @@ Component({
       }
       // 使用已存储的聊天模型，而不是每次重新随机
       const chatModel = this.data.chatModel;
-      console.log('AAAAAAAchatModel', chatModel) 
+      console.log('chatModel is', chatModel) 
       
       // 调用后端接口
       // 构建消息对象

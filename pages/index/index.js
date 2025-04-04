@@ -1,7 +1,7 @@
 const CONFIG = {
-  // API_BASE_URL: 'https://momecho.work',
-  API_BASE_URL: 'http://127.0.0.1:8000',
-  TIMEOUT_DURATION: 2 * 60 * 1000 // 8分钟，单位为毫秒
+  API_BASE_URL: 'https://momecho.work',
+  // API_BASE_URL: 'http://127.0.0.1:8000',
+  TIMEOUT_DURATION: 8 * 60 * 1000 // 8分钟，单位为毫秒
 };
 
 Page({

@@ -10,11 +10,14 @@ Page({
       modelName: "deepseek", // 大模型服务商 //
       model: "deepseek-v3", // 具体的模型版本 //
       logo: "https://docs.cloudbase.net/img/logo.svg", // 图标(只在model模式下生效)
-      welcomeMessage: "欢迎语123321!", // 欢迎语(只在model模式下生效)
+      welcomeMessage: "欢迎使用健康小助手!", // 欢迎语(只在model模式下生效)
       allowWebSearch: true, // 允许界面呈现联网配置开关
     },
     phoneNumber: '',
     name: '',
+    chatModel: '',
+    // 添加一个标志来控制是否显示调试信息
+    showDebugInfo: true
   },
 
   // modelName: "hunyuan-open", // 大模型服务商
@@ -29,13 +32,28 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    console.log('chatbot onLoad', options)
-    const { phoneNumber, name } = options;
-    // 你可以在这里使用这些数据    
+    console.log('chatBot onLoad 接收到的参数:', options);
+    
+    const { phoneNumber, name, chatModel } = options;
+    
+    // 验证接收到的数据
+    console.log('接收到的手机号:', phoneNumber);
+    console.log('接收到的姓名:', name);
+    console.log('接收到的聊天模型:', chatModel);
+    
+    // 将接收到的数据存储在页面的 data 中
     this.setData({
       'agentConfig.welcomeMessage': '新的欢迎语!',
-      'phoneNumber': phoneNumber,
-      'name': name
+      'phoneNumber': phoneNumber || '',
+      'name': name || '',
+      'chatModel': chatModel || ''
+    });
+    
+    // 显示接收到的数据的 Toast 提示
+    wx.showToast({
+      title: `已接收数据: ${name}`,
+      icon: 'none',
+      duration: 2000
     });
   },
 
@@ -73,4 +91,11 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage() {},
+
+  // 添加一个方法来切换调试信息的显示
+  toggleDebugInfo() {
+    this.setData({
+      showDebugInfo: !this.data.showDebugInfo
+    });
+  }
 });
