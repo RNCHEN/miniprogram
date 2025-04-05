@@ -194,7 +194,7 @@
         </block>
       </scroll-view>
 
-      <view class="input_box">
+      <view class="input_box" wx:if="{{showInputBox}}">
         <input class="input" value="{{inputValue}}" type="text" maxlength="1024" bindfocus="bindInputFocus" bindinput="bindKeyInput" placeholder="任何心事都可以告诉我哦" bindconfirm="sendMessage" confirm-type="send" adjust-position cursor-spacing="20" />
         <!-- 加号 -->
         <image src="./imgs/set.svg" class="set" mode="widthFix" bind:tap="handleClickTools" />

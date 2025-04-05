@@ -156,6 +156,7 @@ Component({
       first: '请评价你当前的整体情绪状态。请根据你现在整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。',
       second: '现在，请评价你在与⼩助⼿互动后的整体情绪状态。请根据你此刻整体上感到多么积极或消极，在下⽅的评分表中选择最符合的分数。'
     },
+    showInputBox: false, // 控制输入框的显示
   },
 
   attached: async function () {
@@ -1330,7 +1331,8 @@ Component({
           });
           
           this.setData({
-            showRating: false
+            showRating: false,
+            showInputBox: true // 显示输入框
           });
           
           // 如果是第一次评分，添加欢迎消息到聊天记录，然后30秒后显示第二次评分

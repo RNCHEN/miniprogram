@@ -49,12 +49,6 @@ Page({
       'chatModel': chatModel || ''
     });
     
-    // 显示接收到的数据的 Toast 提示
-    wx.showToast({
-      title: `已接收数据: ${name}`,
-      icon: 'none',
-      duration: 2000
-    });
   },
 
   /**
