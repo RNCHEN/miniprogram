@@ -8,7 +8,7 @@ import {
 // 在组件外部定义全局配置变量
 const CONFIG = {
   API_BASE_URL: 'https://momecho.work',
-  // API_BASE_URL: 'http://127.0.0.1:8000',
+  // API_BASE_URL: 'http://43.154.199.91:8000',
   TIMEOUT_DURATION: 8 * 60 * 1000 // 8分钟，单位为毫秒
 };
 
