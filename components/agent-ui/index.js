@@ -8,7 +8,7 @@ import {
 // 在组件外部定义全局配置变量
 const CONFIG = {
   API_BASE_URL: 'https://momecho.work',
-  // API_BASE_URL: 'http://43.154.199.91:8000',
+  // API_BASE_URL: 'http://127.0.0.1:8000',
   TIMEOUT_DURATION: 8 * 60 * 1000 // 8分钟，单位为毫秒
 };
 
@@ -1338,11 +1338,18 @@ Component({
           // 如果是第一次评分，添加欢迎消息到聊天记录，然后30秒后显示第二次评分
           if (!secondRatingShown) {
             console.log('第一次评分完成，添加欢迎消息到聊天记录');
-            
+            let wmsg;
+            if (this.data.chatModel == 'professional'){
+              wmsg = '感谢你分享你的感受。我是你专属的健康小助手，以专业医生的身份为你提供支持。你可以：\n\n 向小助手倾诉你的担忧与压力，表达你的情绪与想法。\n\n 提出你在育儿过程中遇到的具体问题或困惑。\n\n 询问与健康、情感支持或日常护理相关的建议。\n\n我们的小助手会根据你的感受和需求，提供更贴合你情况的个性化帮助。希望能为你带来更多的支持与安慰'
+            }else if(this.data.chatModel == 'gentle'){
+              wmsg = '感谢你分享你的感受。我是你专属的健康小助手，以朋友的身份为你提供支持。你可以：\n\n 向小助手倾诉你的担忧与压力，表达你的情绪与想法。\n\n 提出你在育儿过程中遇到的具体问题或困惑。\n\n 询问与健康、情感支持或日常护理相关的建议。\n\n我们的小助手会根据你的感受和需求，提供更贴合你情况的个性化帮助。希望能为你带来更多的支持与安慰'
+            }else{
+              wmsg = this.data.customWelcomeMessage
+            }
             // 添加欢迎消息到聊天记录
             const welcomeMessage = {
               role: 'assistant',
-              content: this.data.customWelcomeMessage
+              content: wmsg
             };
             
             this.setData({
