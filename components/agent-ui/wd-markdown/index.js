@@ -47,6 +47,7 @@ Component({
       hljs.registerLanguage('javascript', javascript);
       hljs.registerLanguage('css', css);
       const md = new MarkdownIt({
+        html: true,
         // 默认开启高亮
         highlight: function (str, lang) {
           if (lang && hljs.getLanguage(lang)) {

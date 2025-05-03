@@ -270,18 +270,28 @@
 }
 
 .system {
-  margin-left: 32rpx;
-  margin-right: 32rpx;
-  border-radius: 12rpx;
-  padding-bottom: 16px;
-  box-sizing: border-box;
-  position: relative;
+  background: red
+  display: flex;
+  align-items: flex-start;
+  margin: 0;
+  padding-left: 0; /* 由 avatar-left 控制缩进 */
 }
-.avatar-left{
-  position:absolute;
-  top: 0px;
-  left: 0px;
+
+.avatar-left {
+  margin-right: 10rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
 }
+
+.avatar-left image {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+  border: 2rpx solid #e6e6e6;
+}
+
 .guide_system {
   padding-left: 32rpx;
   padding-right: 32rpx;
@@ -536,12 +546,34 @@
   padding: 10px;
 }
 
-.system {
-  text-align: center;
-  padding: 10px;
-  margin-bottom: 15px;
-  color: #666;
-  font-size: 14px;
+.system > view:nth-child(2) {
+  background: linear-gradient(135deg,rgb(254, 251, 255) 0%,rgb(252, 236, 244) 100%);
+  border-radius: 18rpx 18rpx 18rpx 4rpx;
+  padding: 20rpx 28rpx;
+  color: #222;
+  font-size: 30rpx;
+  max-width: 70vw;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  word-break: break-all;
+  position: relative;
+}
+
+.system > view:nth-child(2)::before {
+  content: '';
+  position: absolute;
+  left: 1rpx; /* 可根据实际气泡宽度微调 */
+  top: -16rpx;
+  width: 0;
+  height: 0;
+  border-left: 12rpx solid transparent;
+  border-right: 12rpx solid transparent;
+  border-bottom: 16rpx solid #f5f7fa; /* 气泡背景色 */
+  border-top: none;
+  filter: drop-shadow(0 0 2rpx #fff6fb);
+}
+
+.system.no-avatar {
+  padding-left: 0 !important;
 }
 
 .message {
