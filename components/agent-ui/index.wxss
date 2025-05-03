@@ -270,7 +270,7 @@
 }
 
 .system {
-  background: red
+  background: transparent;
   display: flex;
   align-items: flex-start;
   margin: 0;
