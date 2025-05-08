@@ -8,6 +8,12 @@
   <view class="sub-title">
     <text>知心陪伴</text>
   </view>
+  <view class="sub-title">
+    <text>我们是一个专为新手妈妈设计的AI支持小助手，陪伴你度过身体恢复、育儿挑战与情绪波动的每一步</text>
+  </view>
+  <view class="sub-title">
+      <text>所有对话和反馈仅用于学术研究目的</text>
+  </view>
   <view class="container">
     <view class="card">
       <view class="input-group">
