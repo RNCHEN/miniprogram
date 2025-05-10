@@ -265,8 +265,14 @@
 }
 
 .set {
-  width: 48rpx;
-  height: 48rpx;
+  width: 40rpx;
+  height: 40rpx;
+  margin: 0 10rpx;
+}
+
+.set.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .system {

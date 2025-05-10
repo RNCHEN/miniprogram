@@ -682,6 +682,12 @@ Component({
     sendMessage: async function (event) {
       const { phoneNumber, name } = this.properties;
       console.log('发送消息 sendMessage', phoneNumber, name)
+      
+      // 如果正在进行对话，直接返回，不执行任何操作
+      if (this.data.chatStatus !== 0) {
+        return;
+      }
+
       if (this.data.showFileList) {
         this.setData({
           showFileList: !this.data.showFileList,
@@ -704,10 +710,7 @@ Component({
         imageList
       } =
         this.data;
-      // 如果正在进行对话，不让发送消息
-      if (chatStatus !== 0) {
-        return;
-      }
+      
       // 将传进来的消息给到inputValue
       if (message) {
         inputValue = message;
@@ -743,8 +746,14 @@ Component({
       }
       // 使用已存储的聊天模型，而不是每次重新随机
       const chatModel = this.data.chatModel;
-      console.log('chatModel is', chatModel) 
+      console.log('chatModel is', chatModel)
       
+      // 设置发送中状态
+      this.setData({
+        chatStatus: 1,
+        chatRecords: [...chatRecords, userRecord]
+      });
+
       // 调用后端接口
       // 构建消息对象
       const messageBody = {

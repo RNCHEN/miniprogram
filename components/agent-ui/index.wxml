@@ -199,9 +199,9 @@
         <!-- 加号 -->
         <image src="./imgs/set.svg" class="set" mode="widthFix" bind:tap="handleClickTools" />
         <!-- 发送按钮 -->
-        <image src="./imgs/send.svg" class="set" mode="widthFix" wx:if="{{!!inputValue&&chatStatus===0}}" bind:tap="sendMessage" style="transform: rotate(-40deg);transform-origin: 8px 8px" />
+        <image src="./imgs/send.svg" class="set" mode="widthFix" wx:if="{{!!inputValue && chatStatus === 0}}" bind:tap="sendMessage" style="transform: rotate(-40deg);transform-origin: 8px 8px" />
         <!-- 暂停按钮 -->
-        <image src="./imgs/stop.svg" class="set" mode="widthFix" wx:if="{{!(chatStatus===0)}}" bind:tap="stop" />
+        <image src="./imgs/stop.svg" class="set disabled" mode="widthFix" wx:if="{{!!inputValue && chatStatus !== 0}}" />
       </view>
     </view>
     <!-- 底部工具栏 -->
