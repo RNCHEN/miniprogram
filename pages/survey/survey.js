@@ -2,37 +2,27 @@ Page({
     data: {},
   
     onLoad() {
-      // 获取存储的用户信息
-      const userInfo = wx.getStorageSync('userInfo');
-      if (!userInfo) {
-        wx.showToast({
-          title: '用户信息不存在',
-          icon: 'none'
-        });
-        return;
-      }
-
-      // 注册问卷完成的回调函数
-      wx.window.surveyCompleted = () => {
-        const userInfo = wx.getStorageSync('userInfo');
-        if (userInfo) {
-          // 问卷完成后自动跳转到 chatBot 页面
-          wx.reLaunch({
-            url: `/pages/chatBot/chatBot?phoneNumber=${encodeURIComponent(userInfo.phoneNumber)}&name=${encodeURIComponent(userInfo.name)}`,
-            success: () => {
-              // 清除存储的数据
-              wx.removeStorageSync('userInfo');
-            }
-          });
-        }
-      };
+      // 直接加载问卷页面，不需要额外的处理
+      console.log('问卷页面加载完成');
     },
   
     // 监听页面卸载
     onUnload() {
-      // 清理回调函数
-      if (wx.window.surveyCompleted) {
-        delete wx.window.surveyCompleted;
-      }
+      // 页面卸载时的清理工作
+      console.log('问卷页面卸载');
+    },
+
+    // 跳转到其他小程序
+    navigateToOtherMiniProgram() {
+      wx.navigateToMiniProgram({
+        appId: 'wxd947200f82267e58',
+        path: 'pages/wjxqList/wjxqList?activityId=wD7i1cY',
+        success(res) {
+          console.log('跳转成功', res);
+        },
+        fail(err) {
+          console.error('跳转失败', err);
+        }
+      });
     }
-  });
+});

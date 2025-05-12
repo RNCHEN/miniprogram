@@ -1,1 +1,3 @@
-<web-view src="https://www.wjx.cn/vm/wD7i1cY.aspx#"></web-view> 
+<view class="container">
+  <button type="primary" bindtap="navigateToOtherMiniProgram">跳转到问卷列表</button>
+</view> 
