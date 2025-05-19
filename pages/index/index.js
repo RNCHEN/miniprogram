@@ -176,5 +176,16 @@ Page({
         });
       }
     });
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+    return {
+      title: 'Mom Echo - 专为新手妈妈设计的AI支持小助手',
+      path: '/pages/index/index',
+      imageUrl: '/imgs/1.jpg'
+    }
   }
 });
