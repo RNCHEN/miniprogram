@@ -37,6 +37,7 @@
       </view>
 
       <button class="login-btn" bindtap="handleLogin">登录</button>
+      <button class="login-btn" bindtap="handleExit">退出</button>
     </view>
 
     <view class="footer">

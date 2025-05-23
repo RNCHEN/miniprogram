@@ -187,5 +187,18 @@ Page({
       path: '/pages/index/index',
       imageUrl: '/imgs/1.jpg'
     }
+  },
+
+  // 处理退出
+  handleExit() {
+    wx.showModal({
+      title: '确认退出',
+      content: '确定要退出小程序吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.exitMiniProgram();
+        }
+      }
+    });
   }
 });

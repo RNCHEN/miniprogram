@@ -199,6 +199,11 @@
   border-radius: 10px;
   font-size: 18px;
   cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.login-btn:last-child {
+  margin-bottom: 0;
 }
 
 .login-btn:hover {
